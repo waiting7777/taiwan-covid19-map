@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/taiwan-covid19-map/static/css/main.cd5490c0.css",
+    "main.js": "/taiwan-covid19-map/static/js/main.ef9adb94.js",
+    "static/js/787.951d7b78.chunk.js": "/taiwan-covid19-map/static/js/787.951d7b78.chunk.js",
+    "index.html": "/taiwan-covid19-map/index.html",
+    "main.cd5490c0.css.map": "/taiwan-covid19-map/static/css/main.cd5490c0.css.map",
+    "main.ef9adb94.js.map": "/taiwan-covid19-map/static/js/main.ef9adb94.js.map",
+    "787.951d7b78.chunk.js.map": "/taiwan-covid19-map/static/js/787.951d7b78.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cd5490c0.css",
+    "static/js/main.ef9adb94.js"
+  ]
+}
