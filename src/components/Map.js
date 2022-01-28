@@ -24,9 +24,11 @@ import towns66000 from "./towns-66000.json"
 import towns67000 from "./towns-67000.json"
 import towns68000 from "./towns-68000.json"
 import * as topojson from 'topojson-client'
+import confirm from '../data/confirm_native.json'
 
 const TaiwanMap = () => {
     const [town, setTown] = useState("")
+    const [cases, setCases] = useState({})
 
     useEffect(() => {
         L.TopoJSON = L.GeoJSON.extend({
@@ -43,31 +45,58 @@ const TaiwanMap = () => {
             }
         });
 
+        const temp = {}
+        confirm.forEach(v => {
+            if (temp[v["鄉鎮"]]) {
+                temp[v["鄉鎮"]] += Number(v["確定病例數"])
+            } else {
+                temp[v["鄉鎮"]] = Number(v["確定病例數"])
+            }
+        })
+
         const mymap = L.map("mapid").setView([23.730023, 121.4389886], 8);
         mymap.doubleClickZoom.disable();
 
         L.tileLayer('https://api.mapbox.com/styles/v1/waiting7777/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             maxZoom: 10,
             minZoom: 7,
-            id: 'cik561ckp007ibum79vhnh7hp',
+            id: 'ckyxrt2hz000115qyjsoer04g',
             tileSize: 512,
             zoomOffset: -1,
             accessToken: 'pk.eyJ1Ijoid2FpdGluZzc3NzciLCJhIjoiY2lrNTI0NjJ3MDA2cXY2a3RpaTYzM3Q1NSJ9.EOZ_nqPf_QkZZNdxRKMQqQ'
         }).addTo(mymap);
 
-        var myStyle = {
-            fillColor: 'transparent',
-            color: '#636363',
-            weight: 1,
-            opacity: 0.5
-        };
+        function style(feature) {
+            let fillColor = 'transparent'
+            const n = temp[feature.properties.name] ?? 0
+            if (n === 0) {
+                fillColor = 'rgb(255, 255, 255)'
+            } else if (n > 1 && n <= 5) {
+                fillColor = 'rgb(255, 216, 223)'
+            } else if (n > 6 && n <= 10) {
+                fillColor = 'rgb(254, 177, 191)'
+            } else if (n > 10 && n <= 15) {
+                fillColor = 'rgb(254, 137, 159)'
+            } else if (n > 11 && n <= 20) {
+                fillColor = 'rgb(253, 98, 127)'
+            } else {
+                fillColor = 'rgb(255, 0, 49)'
+            }
+
+            return {
+                fillColor,
+                fillOpacity: 0.8,
+                color: '#636363',
+                weight: 1,
+                opacity: 0.5
+            };
+        }
 
         function highlightFeature(e) {
             var layer = e.target;
 
             layer.setStyle({
-                fillColor: '#7f7677',
-                fillOpacity: 0.7
+                fillColor: '#7f7677'
             });
 
             setTown(layer.feature.properties.name)
@@ -78,7 +107,7 @@ const TaiwanMap = () => {
         }
 
         function resetHighlight(e) {
-            e.target.setStyle(myStyle)
+            e.target.setStyle(style(e.target.feature))
         }
 
         function onEachFeature(feature, layer) {
@@ -88,7 +117,7 @@ const TaiwanMap = () => {
             });
         }
 
-        var topoLayer = new L.TopoJSON(null, { style: myStyle, onEachFeature: onEachFeature });
+        var topoLayer = new L.TopoJSON(null, { style: style, onEachFeature: onEachFeature });
         topoLayer.addData(towns09007)
         topoLayer.addData(towns09020)
         topoLayer.addData(towns10002)
@@ -113,6 +142,8 @@ const TaiwanMap = () => {
         topoLayer.addData(towns68000)
         topoLayer.addTo(mymap);
 
+        setCases(temp)
+        console.log(temp)
         return () => {
             mymap.off();
             mymap.remove();
@@ -123,8 +154,37 @@ const TaiwanMap = () => {
     return (
         <div className='relative'>
             <div id="mapid" style={{ height: "100vh", width: "100vw" }} />
-            <div className='absolute bg-white top-5 right-5 w-48 h-24 z-[1000]'>{town}</div>
-        </div>
+            <div className='absolute bg-white top-5 right-5 w-24 h-12 z-[1000] flex justify-center items-center'>{town}: {cases[town] ?? 0}</div>
+            <div className='absolute right-5 top-1/2 bottom-auto z-[1000] transform -translate-y-1/2'>
+                <div className='flex flex-col w-14' style={{ color: '#29242f' }}>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>21+</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(255, 0, 49)' }}></div>
+                    </div>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>16 ~ 20</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(253, 98, 127)' }}></div>
+                    </div>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>11 ~ 15</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(254, 137, 159)' }}></div>
+                    </div>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>6 ~ 10</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(254, 177, 191)' }}></div>
+                    </div>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>1 ~ 5</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(255, 216, 223)' }}></div>
+                    </div>
+                    <div className='flex items-center gap-1 text-xs leading-none'>
+                        <div className='flex-1 text-right'>0</div>
+                        <div className='w-2 h-3' style={{ backgroundColor: 'rgb(255, 255, 255)' }}></div>
+                    </div>
+                </div>
+
+            </div>
+        </div >
     )
 }
 
