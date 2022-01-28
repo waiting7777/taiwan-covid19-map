@@ -25,10 +25,34 @@ import towns67000 from "./towns-67000.json"
 import towns68000 from "./towns-68000.json"
 import * as topojson from 'topojson-client'
 import confirm from '../data/confirm_native.json'
+import _ from 'lodash'
+import { format, compareAsc } from 'date-fns'
+import classNames from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
 
 const TaiwanMap = () => {
     const [town, setTown] = useState("")
     const [cases, setCases] = useState({})
+    const [currentDate, setCurrentDate] = useState(format(new Date(), 'M-dd'))
+    const [inPlay, setInplay] = useState(false)
+
+    function play() {
+        if (inPlay) return
+
+        setInplay(true)
+
+        setCurrentDate('1-1')
+        let counter = 2
+        const t = setInterval(() => {
+            setCurrentDate(`1-${counter}`)
+            counter++
+            if (counter === 29) {
+                clearInterval(t)
+                setInplay(false)
+            }
+        }, 1000)
+    }
 
     useEffect(() => {
         L.TopoJSON = L.GeoJSON.extend({
@@ -46,7 +70,7 @@ const TaiwanMap = () => {
         });
 
         const temp = {}
-        confirm.forEach(v => {
+        confirm.filter(v => compareAsc(new Date(v["個案研判日"]), new Date(`2022-${currentDate}`)) === -1).forEach(v => {
             if (temp[v["鄉鎮"]]) {
                 temp[v["鄉鎮"]] += Number(v["確定病例數"])
             } else {
@@ -67,17 +91,18 @@ const TaiwanMap = () => {
         }).addTo(mymap);
 
         function style(feature) {
-            let fillColor = 'transparent'
+            let fillColor = 'rgb(255, 255, 255)'
             const n = temp[feature.properties.name] ?? 0
+
             if (n === 0) {
                 fillColor = 'rgb(255, 255, 255)'
-            } else if (n > 1 && n <= 5) {
+            } else if (n > 0 && n <= 5) {
                 fillColor = 'rgb(255, 216, 223)'
-            } else if (n > 6 && n <= 10) {
+            } else if (n > 5 && n <= 10) {
                 fillColor = 'rgb(254, 177, 191)'
             } else if (n > 10 && n <= 15) {
                 fillColor = 'rgb(254, 137, 159)'
-            } else if (n > 11 && n <= 20) {
+            } else if (n > 15 && n <= 20) {
                 fillColor = 'rgb(253, 98, 127)'
             } else {
                 fillColor = 'rgb(255, 0, 49)'
@@ -85,7 +110,7 @@ const TaiwanMap = () => {
 
             return {
                 fillColor,
-                fillOpacity: 0.8,
+                fillOpacity: 0.9,
                 color: '#636363',
                 weight: 1,
                 opacity: 0.5
@@ -143,13 +168,11 @@ const TaiwanMap = () => {
         topoLayer.addTo(mymap);
 
         setCases(temp)
-        console.log(temp)
         return () => {
             mymap.off();
             mymap.remove();
         }
-    }, [])
-
+    }, [currentDate])
 
     return (
         <div className='relative'>
@@ -182,7 +205,25 @@ const TaiwanMap = () => {
                         <div className='w-2 h-3' style={{ backgroundColor: 'rgb(255, 255, 255)' }}></div>
                     </div>
                 </div>
-
+            </div>
+            <div className='absolute w-full bottom-0 h-8 z-[1000] flex bg-gray-800'>
+                {_.range(31).map(v => {
+                    const dstring = `1-${v + 1}`
+                    return (
+                        <div
+                            key={v}
+                            className={classNames({
+                                'bg-white text-gray-500': dstring === currentDate,
+                                'opacity-50 cursor-not-allowed': v > 27
+                            }, 'flex whitespace-nowrap items-center justify-center px-2 py-1 cursor-pointer text-white hover:bg-white hover:text-gray-500')} style={{ borderRight: '1px solid #222' }}
+                            onClick={() => setCurrentDate(dstring)}
+                        >{dstring}</div>
+                    )
+                })}
+            </div>
+            <div className='absolute w-64 left-1 top-1/3 flex bg-white items-center z-[1000]'>{JSON.stringify(cases)}</div>
+            <div className='absolute right-1 bottom-10 text-xl rounded-full flex cursor-pointer items-center z-[1000]' onClick={play}>
+                <FontAwesomeIcon className='w-full' icon={faPlay} />
             </div>
         </div >
     )
