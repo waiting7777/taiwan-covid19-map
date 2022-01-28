@@ -214,8 +214,9 @@ const TaiwanMap = () => {
                             key={v}
                             className={classNames({
                                 'bg-white text-gray-500': dstring === currentDate,
+                                'text-white': dstring !== currentDate,
                                 'opacity-50 cursor-not-allowed': v > 27
-                            }, 'flex whitespace-nowrap items-center justify-center px-2 py-1 cursor-pointer text-white hover:bg-white hover:text-gray-500')} style={{ borderRight: '1px solid #222' }}
+                            }, 'flex whitespace-nowrap items-center justify-center px-2 py-1 cursor-pointer border-r hover:bg-white hover:text-gray-500')}
                             onClick={() => setCurrentDate(dstring)}
                         >{dstring}</div>
                     )
