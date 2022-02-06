@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/taiwan-covid19-map/static/css/main.55f56eb3.css",
-    "main.js": "/taiwan-covid19-map/static/js/main.f117ca48.js",
+    "main.css": "/taiwan-covid19-map/static/css/main.d6d161e6.css",
+    "main.js": "/taiwan-covid19-map/static/js/main.b0ff138d.js",
     "static/js/787.951d7b78.chunk.js": "/taiwan-covid19-map/static/js/787.951d7b78.chunk.js",
     "index.html": "/taiwan-covid19-map/index.html",
-    "main.55f56eb3.css.map": "/taiwan-covid19-map/static/css/main.55f56eb3.css.map",
-    "main.f117ca48.js.map": "/taiwan-covid19-map/static/js/main.f117ca48.js.map",
+    "main.d6d161e6.css.map": "/taiwan-covid19-map/static/css/main.d6d161e6.css.map",
+    "main.b0ff138d.js.map": "/taiwan-covid19-map/static/js/main.b0ff138d.js.map",
     "787.951d7b78.chunk.js.map": "/taiwan-covid19-map/static/js/787.951d7b78.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.55f56eb3.css",
-    "static/js/main.f117ca48.js"
+    "static/css/main.d6d161e6.css",
+    "static/js/main.b0ff138d.js"
   ]
 }
